@@ -236,6 +236,11 @@
   - name: Serial console grub proactive configuration
     href: serial-console-grub-proactive-configuration.md   
 
+- name: Linux HA Pacemaker Cluster
+  items:
+  - name: Troubleshoot Azure Fence Agent Issues
+    href: troubleshoot-azure-fence-agent.md
+    
 - name: On-demand Capacity Reservation issues
   items:
   - name: Can't deploy Virtual Machines or Virtual Machine Scale Sets (Uniform) with Capacity Reservation
