@@ -1,5 +1,5 @@
 ---
-title: Troubleshoot Azure Fence Agent Issues
+title: Troubleshoot Azure Fence Agent Issues in SLES
 description: Provides troubleshooting guidance for Azure Fence Agent failing to start
 author: rnirek
 ms.author: rnirek
@@ -15,7 +15,7 @@ ms.collection: linux
 
 The Azure fence agent makes use of the python program located at /usr/sbin/fence_azure_arm. The cluster RA used to implement STONITH calls this program with the appropriate parameters and uses it to communicate with the Azure platform using API calls.
 
-As documented in [SUSE - Create Azure Fence agent STONITH device](https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-suse-pacemaker?tabs=msi#create-azure-fence-agent-stonith-device)  and [RHEL - Create STONITH device](https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-rhel-pacemaker?tabs=msi#create-a-fencing-device) , the roles provide permissions to the fence agent to perform the following actions.
+As documented in [SUSE - Create Azure Fence agent STONITH device](https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-suse-pacemaker?tabs=msi#create-azure-fence-agent-stonith-device), the roles provide permissions to the fence agent to perform the following actions.
 
 1. powerOff
 2. start
@@ -24,7 +24,7 @@ When the VM is detected as being unhealthy, the fence agent uses the above actio
 
 ## Prerequisites
 
-Pacemaker clusters running on RHEL and SLES and using Azure fence agent  for STONITH purposes.
+Pacemaker clusters running on SLES and using Azure fence agent  for STONITH purposes.
 
 ## Description 
 
@@ -95,7 +95,7 @@ nc -z -v login.microsoftonline.com 443
 ```
 
 2. Valid information set up in username/password for the STONITH resource
-One of the major causes of the STONITH resource failing is the use of invalid values for the username or password if using Managed Identity. This can be tested using the fence_azure_arm command as shown below. The values for username and password are those created per the document [SUSE - Create Azure Fence agent STONITH device](https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-suse-pacemaker?tabs=msi#create-azure-fence-agent-stonith-device)  and [RHEL - Create STONITH device](https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-rhel-pacemaker?tabs=msi#create-a-fencing-device) , as appropriate for the customer distribution.
+One of the major causes of the STONITH resource failing is the use of invalid values for the username or password if using Managed Identity. This can be tested using the fence_azure_arm command as shown below. The values for username and password are those created per the document [SUSE - Create Azure Fence agent STONITH device](https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-suse-pacemaker?tabs=msi#create-azure-fence-agent-stonith-device), as appropriate for the customer distribution.
 
 ```/usr/sbin/fence_azure_arm --action=list --username='<user name>' --password='<password>' --tenantId=<tenant ID> --resourceGroup=<resource group> ```
 
@@ -158,8 +158,7 @@ Apr 2 00:49:57 heeudpgscs01 stonith-ng[105424]: warning: fence_azure_arm[109393]
 Apr 2 00:49:57 heeudpgscs01 stonith-ng[105424]: warning: fence_azure_arm[109393] stderr: [ Message: The client 'd36bc109-bdfd-4b6d-bf28-d3990d3c22ea' with object id 'd36bc109-bdfd-4b6d-bf28-d3990d3c22ea' does not have authorization to perform action 'Microsoft.Compute/virtualMachines/read' over scope '/subscriptions/e2d1c3ed-77d2-47f5-a2af-27aa0f9d79a8/resourceGroups/DPG-RG-MAIN01-PROD/providers/Microsoft.Compute' or the scope is invalid. If access was recently granted, please refresh your credentials. ]
 ```
 ### Resolution:
-1. Based on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-suse-pacemaker#1-create-a-custom-role-for-the-fence-agent 
-2. Check the custom role definition for "Linux Fence Agent Role". The role name may be different for different customers.
+1. Based on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/high-availability-guide-suse-pacemaker#1-create-a-custom-role-for-the-fence-agent, check the custom role definition for "Linux Fence Agent Role". The role name may be different for different customers.
 3. Check if the app fencing-agent" having this custom role is assigned to the impacted VM or not.
 4. If it doesn't, assign the app to the VM via Access Control.
 5. Start the pacemaker cluster and it should along with the fencing agent (Azure Fencing Agent).
@@ -170,7 +169,7 @@ Apr 2 00:49:57 heeudpgscs01 stonith-ng[105424]: warning: fence_azure_arm[109393]
 warning: fence_azure_arm[28114] stderr: [ 2021-06-24 07:59:29,832 ERROR: Failed: Error occurred in request., SSLError: HTTPSConnectionPool(host='management.azure.com ', port=443): Max retries exceeded with url: /subscriptions/a8964342-5414-40a0-aade-5c3d23482016/resourceGroups/rgglbp01/providers/Microsoft.Compute/virtualMachines?api-version=2019-03-01 (Caused by SSLError(SSLError('bad handshake: SysCallError(-1, 'Unexpected EOF')',),)) ]
 ```
 ### Resolution:
-Tested connectivity from affected nodes using openssl:
+1.Tested connectivity from affected nodes using openssl:
 ```openssl s_client -connect management.azure.com:443```
 
 Noticed that the output was not showing the full certificate handshake:
