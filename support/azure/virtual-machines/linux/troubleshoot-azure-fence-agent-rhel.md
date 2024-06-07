@@ -28,6 +28,36 @@ Pacemaker clusters running on RHEL using Azure fence agent  for STONITH purposes
 
 ## Description 
 
+Azure Fencing Agent resource fails to start and reports "unknown error" and shows in "stopped" state.
+
+```VM1:/home/azureadmin1 # pcs status
+Cluster name: nw1-azr
+Cluster Summary:
+  * Stack: corosync
+  * Current DC: RHEL-SAP01 (version 2.0.5-9.el8_4.8-ba59be7122) - partition with quorum
+  * Last updated: Fri Jun  7 01:34:38 2023
+  * Last change:  Fri Jun  7 01:34:23 2023 by root via cibadmin on RHEL-SAP01
+  * 2 nodes configured
+  * 3 resource instances configured
+
+Node List:
+  * Online: [ RHEL-SAP01 RHEL-SAP02 ]
+
+Full List of Resources:
+  * rsc_st_azure        (stonith:fence_azure_arm):       Stopped
+  * Clone Set: health-azure-events-clone [health-azure-events]:
+    * Started: [ RHEL-SAP01 RHEL-SAP02 ]
+
+Failed Resource Actions:
+  * rsc_st_azure_start_0 on RHEL-SAP01 'error' (1): call=20, status='complete', exitreason='', last-rc-change='2023-06-04 01:34:24Z', queued=0ms, exec=4041ms
+  * rsc_st_azure_start_0 on RHEL-SAP02 'error' (1): call=14, status='complete', exitreason='', last-rc-change='2023-06-04 01:34:28Z', queued=0ms, exec=4243ms
+
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+```
+
 ## Scenario 1: <!--Required: Here goes the Scenario short title-->
 ```/var/log/messages
 2021-03-15T20:23:15.441083+00:00 NodeName pacemaker-fenced[2550]:  warning: fence_azure_arm[21839] stderr: [ 2021-03-15 20:23:15,398 ERROR: Failed: Azure Error: AuthenticationFailed ]
@@ -73,6 +103,10 @@ If the command does not return successfully, it should be re-run with the -v fla
 
 ```/usr/sbin/fence_azure_arm --action=list --username='<user name>' --password='<password>' --tenantId=<tenant ID> --resourceGroup=<resource group> -v -D /var/tmp/debug-fence.out ```
 
+If using Managed Indentity: 
+
+```/usr/sbin/fence_azure_arm --action=list --msi --resourceGroup=<resource group> -v -D /var/tmp/debug-fence.out```
+
 ### Next Steps:
 If you require further help, see [Support and troubleshooting for Azure VMs](https://learn.microsoft.com/en-us/azure/virtual-machines/vm-support-help). That article can also help you file an Azure support incident, if necessary. As you follow the instructions, keep a copy of the *debug-fence.out* because it might be requested for inspection by the support engineer.
 
@@ -96,9 +130,9 @@ Once the IDs are verified and replaced, reconfigure the fencing agent in the clu
 ```
 # pcs property set maintenance-mode=true
 
-# pcs configure edit <fencing agent resource>
+# pcs cluster edit
 
-Change the parameters accordingly
+Change the parameters for Azure Fence Agent resources
 
 Save the changes
 
