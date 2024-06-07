@@ -105,6 +105,10 @@ If the command does not return successfully, it should be re-run with the -v fla
 
 ```/usr/sbin/fence_azure_arm --action=list --username='<user name>' --password='<password>' --tenantId=<tenant ID> --resourceGroup=<resource group> -v -D /var/tmp/debug-fence.out ```
 
+If using Managed Indentity: 
+
+```/usr/sbin/fence_azure_arm --action=list --msi --resourceGroup=<resource group> -v -D /var/tmp/debug-fence.out```
+
 ### Next Steps:
 If you require further help, see [Support and troubleshooting for Azure VMs](https://learn.microsoft.com/en-us/azure/virtual-machines/vm-support-help). That article can also help you file an Azure support incident, if necessary. As you follow the instructions, keep a copy of the *debug-fence.out* because it might be requested for inspection by the support engineer.
 
